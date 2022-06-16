@@ -1,7 +1,8 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
-from utils import BaseModel
-from database import Base
+from database import Base, BaseModel
+
+
 
 roles_permissions_association_table = sa.Table('roles_permissions', Base.metadata,
                                                sa.Column(
@@ -12,7 +13,6 @@ roles_permissions_association_table = sa.Table('roles_permissions', Base.metadat
 class Role(BaseModel):
     __tablename__ = "roles"
     name = sa.Column(sa.String(50), nullable=False)
-    role_for = sa.Column(sa.String(50),  nullable=False)
     permissions = relationship("Permission",
                                secondary=roles_permissions_association_table)
 
@@ -27,3 +27,5 @@ class Permission(BaseModel):
 
     def __repr__(self) -> str:
         return f"(Permission: {self.code})"
+
+    

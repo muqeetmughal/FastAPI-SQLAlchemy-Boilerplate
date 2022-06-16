@@ -3,8 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from database import engine, init_db
 # from routers import auth, access, corporate
-
-app = FastAPI()
+from apps.auth.views import auth
+app = FastAPI(title="Fast API Boilerplate Project", description="This project is the Boilerplate that includes Authentication and Authorization")
 
 origins = ["*"]
 
@@ -17,10 +17,10 @@ app.add_middleware(
 )
 # init_db()
 
-# app.include_router(auth.router,
-#                    prefix="/auth",
-#                    tags=["Authentication"]
-#                    )
+app.include_router(auth,
+                   prefix="/auth",
+                   tags=["Authentication"]
+                   )
 # app.include_router(access.router,
 #                    prefix="/access",
 #                    tags=["Roles and Permissions"]
