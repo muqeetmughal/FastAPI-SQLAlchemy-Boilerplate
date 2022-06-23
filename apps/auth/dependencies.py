@@ -1,31 +1,36 @@
-from fastapi import Depends, HTTPException
+import re
+from fastapi import Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from .jwt_handler import AuthHandler
 from dependencies import get_db
-
-from jose.exceptions import JWTError
+from jwt.exceptions import PyJWTError
 from . import models
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/login')
 auth_handler = AuthHandler()
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+
+
+async def get_current_user(request: Request, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+
 
     try:
         payload = auth_handler.decodeJWT(token)
 
-        username = payload.get("username")
-
-        if username is None:
+        if payload is None or payload == {}:
             
-            raise HTTPException(status_code=403, detail="Could not validate credentials",headers={"WWW-Authenticate": "Bearer"},)
+            raise HTTPException(status_code=401, detail="Could not validate credentials, Token is Expired",headers={"WWW-Authenticate": "Bearer"},)
+        else:
 
-        user = db.query(models.User).filter_by(username=username).first()
+            username = payload.get("username")
 
-        return user
+            user = db.query(models.User).filter_by(username=username).first()
+            request.current_user = user
 
-    except JWTError:
+            return user
+
+    except Exception as e:
+        print(e, __file__)
         raise HTTPException(status_code=403, detail="Could not validate credentials",headers={"WWW-Authenticate": "Bearer"},)
-
-    

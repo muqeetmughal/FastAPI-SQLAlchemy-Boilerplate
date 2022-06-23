@@ -40,3 +40,27 @@ class CreatePermissionSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class SetUserPermission(BaseModel):
+    permission_id : int
+    user_id : int
+
+    class Config:
+        orm_mode = True
+
+
+class SetUserRole(BaseModel):
+    role_id : int
+    user_id : int
+
+    class Config:
+        orm_mode = True
+
+
+class SetRolePermission(BaseModel):
+    role_id : int
+    permission_id : int
+
+    class Config:
+        orm_mode = True

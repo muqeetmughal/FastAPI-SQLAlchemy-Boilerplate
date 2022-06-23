@@ -1,6 +1,7 @@
+from os import access
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import APIRouter, Depends, HTTPException, Body
-
+from pydantic import BaseModel
 from .jwt_handler import AuthHandler
 from sqlalchemy.orm import Session
 from apps.auth.models import User
@@ -51,9 +52,24 @@ def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get
     if (user is None) or (not auth_handler.verify_password(form.password, user.password)):
         raise HTTPException(
             status_code=401, detail='Invalid username and/or password')
-    token = auth_handler.signJWT(user.username)
+    access_token = auth_handler.access_token(user.username)
+    # refresh_token = auth_handler.refresh_token(user.username)
 
-    return {"access_token": token, 'token_type': 'bearer'}
+    return {"access_token": access_token, 'token_type': 'bearer'}
+
+class RefreshToken(BaseModel):
+    refresh_token : str
+
+
+# @auth.post('/refresh')
+# def refresh_token(request : RefreshToken):
+
+
+#     payload = auth_handler.decodeJWT(bytes(refresh_token))
+#     print(payload)
+   
+
+#     return refresh_token
 
 
 @auth.get("/me")

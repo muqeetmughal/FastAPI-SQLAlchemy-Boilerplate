@@ -17,7 +17,7 @@ class RegisterReponseSchema(BaseModel):
     username : str
     email : Optional[str]
     phone_number : Optional[str]
-    is_admin : bool
+    is_superuser : bool
 
     class Config:
         orm_mode = True
